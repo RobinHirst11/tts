@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Personal TTS</title>
+        <style>
+            @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css');
+
+            body {
+                background-color: #111;
+                color: #fff;
+                margin: 0;
+                font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+                    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+
+            main {
+                min-height: 100vh;
+                padding: 2rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                margin-top: 2rem;
+            }
+
+            /* Desktop */
+            @media (min-width: 768px) {
+                .buttons {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                    align-items: center;
+                    height: auto;
+                    margin-top: 0;
+                }
+            }
+
+            .title {
+                margin: 0;
+                line-height: 1.15;
+                font-size: 3rem;
+                margin-bottom: 2rem;
+            }
+
+            /* Adjust the grid layout for different screen sizes */
+            @media (max-width: 768px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* Responsive image sizing for desktop */
+            .clickable-image img {
+                height: auto;
+                width: 100%;
+                object-fit: cover;
+            }
+
+            /* Responsive image scaling for tablets and mobile */
+            @media (max-width: 768px) {
+                .clickable-image img {
+                    height: 400px;
+                    object-fit: contain;
+                }
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+                margin-top: 2rem;
+            }
+
+            .clickable-image {
+                position: relative;
+                display: block;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .clickable-image img {
+                width: 100%;
+                height: auto;
+                border-radius: 10px;
+                object-fit: cover;
+                transition: transform 0.3s ease, margin-bottom 0.3s ease;
+            }
+
+            /* Button styles for all devices */
+            .button {
+                margin: 0.5rem;
+                padding: 1.5rem;
+                text-align: center;
+                color: #fff;
+                text-decoration: none;
+                border: 1px solid #BC987E;
+                border-radius: 10px;
+                transition: color 0.15s ease, border-color 0.15s ease;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 400px;
+            }
+
+            /* Responsive adjustments for larger screens */
+            @media (min-width: 768px) {
+                .button {
+                    width: auto;
+                }
+            }
+
+            .button:hover,
+            .button:focus,
+            .button:active {
+                color: #111;
+                border-color: #111;
+            }
+
+            /* Icons for the buttons */
+            .button i {
+                font-size: 1.2rem;
+                margin-right: 0.5rem;
+            }
+
+            /* index.html */
+            body.index {
+                overflow: hidden;
+            }
+
+            /* dslr.html and phone.html */
+            body.dslr,
+            body.phone {
+                overflow: auto;
+            }
+
+        </style>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            input[type=text],
+            select,
+            textarea,
+            input[type=password] {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                resize: vertical;
+            }
+
+            label {
+                padding: 12px 12px 12px 0;
+                display: inline-block;
+            }
+
+            input[type=button] {
+                align-items: center;
+                appearance: none;
+                background-color: #FCFCFD;
+                border-radius: 4px;
+                border-width: 0;
+                box-shadow: rgba(156, 122, 230, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+                box-sizing: border-box;
+                color: #000000;
+                font-weight: bold;
+                cursor: pointer;
+                display: inline-flex;
+                font-family: "JetBrains Mono", monospace;
+                height: 48px;
+                justify-content: center;
+                line-height: 1;
+                list-style: none;
+                overflow: hidden;
+                padding-left: 16px;
+                padding-right: 16px;
+                position: relative;
+                text-align: left;
+                text-decoration: none;
+                transition: box-shadow .15s, transform .15s;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+                white-space: nowrap;
+                will-change: box-shadow, transform;
+                font-size: 18px;
+            }
+
+            #cancelvoice,
+            #downloadvoice {
+                box-shadow: rgba(156, 122, 230, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 0 0 inset;
+            }
+
+            input[type=button]:focus {
+                box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(131, 102, 194, 0.4) 0 2px 4px, rgba(140, 110, 204, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+            }
+
+            #cancelvoice:focus,
+            #downloadvoice:focus {
+                box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(131, 102, 194, 0.4) 0 2px 4px, rgba(140, 110, 204, 0.3) 0 7px 13px -3px, #D6D6E7 0 0 0 inset;
+            }
+
+            input[type=button]:hover {
+                box-shadow: rgba(140, 109, 206, 0.4) 0 4px 8px, rgba(145, 114, 214, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+                transform: translateY(-2px);
+            }
+
+            #cancelvoice:hover,
+            #downloadvoice:hover {
+                box-shadow: rgba(140, 109, 206, 0.4) 0 4px 8px, rgba(145, 114, 214, 0.3) 0 7px 13px -3px, #D6D6E7 0 0 0 inset;
+            }
+
+            input[type=button]:active {
+                box-shadow: #D6D6E7 0 3px 7px inset;
+                transform: translateY(2px);
+            }
+
+            .row .col-25 {
+                text-align: center;
+            }
+
+            .container {
+                border-radius: 5px;
+                background-color: #292828;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                max-width: 800px;
+                margin: auto;
+                margin-top: 30px;
+            }
+
+            .title {
+                margin-top: 180px !important;
+                margin: auto;
+                text-align: center;
+            }
+
+            .col-25 {
+                float: left;
+                width: 15%;
+                margin-top: 6px;
+            }
+
+            .col-75 {
+                float: left;
+                width: 85%;
+                margin-top: 6px;
+            }
+
+            /* Clear floats after the columns */
+            .row:after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+
+            /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+            @media screen and (max-width: 600px) {
+
+                .col-25,
+                .col-75,
+                input[type=submit] {
+                    width: 100%;
+                    margin-top: 0;
+                }
+            }
+
+            #div_progress {
+                word-wrap: break-word;
+            }
+
+            label {
+                font-weight: bold;
+            }
+
+            .bubbles {
+                transition: transform 2.0s ease, opacity 1.16s ease, left .16s ease, top .16s ease, right .16s ease, bottom .16s ease;
+                position: fixed;
+                z-index: -1;
+                background-color: #BC987E;
+                border-radius: 50%;
+                width: 120px;
+                height: 120px;
+                transform: scale(1);
+                opacity: 0;
+                filter: blur(30px);
+                backdrop-filter: blur(200px);
+            }
+
+            .bubble-hide {
+                transform: scale(0);
+                opacity: 0 !important;
+            }
+
+        </style>
+        <script defer>
+            setInterval(function () {
+                const newBubble = document.createElement('div');
+                newBubble.classList.add('bubbles');
+                document.body.appendChild(newBubble);
+                newBubble.style.top = Math.floor(Math.random() * window.innerHeight + 1) + 'px';
+                newBubble.style.left = Math.floor(Math.random() * window.innerWidth + 1) + 'px';
+                // newBubble.style.backgroundColor = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
+                const myDirection = Math.floor(Math.random() * 5);
+                setTimeout(function () {
+                    newBubble.style.opacity = '0.5';
+                }, 1);
+                const speed = 0.16;
+                let mytime = setInterval(function () {
+                    if (myDirection == 1) {
+                        newBubble.style.top = (parseInt(newBubble.style.top) - speed) + 'px';
+                        newBubble.style.left = (parseInt(newBubble.style.left) - speed) + 'px';
+                    } else if (myDirection == 2) {
+                        newBubble.style.top = (parseInt(newBubble.style.top) - speed) + 'px';
+                        newBubble.style.right = (parseInt(newBubble.style.right) - speed) + 'px';
+                    } else if (myDirection == 3) {
+                        newBubble.style.top = (parseInt(newBubble.style.top) + speed) + 'px';
+                        newBubble.style.left = (parseInt(newBubble.style.left) + speed) + 'px';
+                    } else {
+                        newBubble.style.top = (parseInt(newBubble.style.top) + speed) + 'px';
+                        newBubble.style.right = (parseInt(newBubble.style.right) + speed) + 'px';
+                    }
+                    if (newBubble.style.top <= 0) return clearInterval(mytime);
+                    if (newBubble.style.left <= 0) return clearInterval(mytime);
+                    if (newBubble.style.right >= window.innerWidth) return clearInterval(mytime);
+                    if (newBubble.style.bottom >= window.innerWidth) return clearInterval(mytime);
+                }, 1000 / 60);
+                setTimeout(function () {
+                    newBubble.classList.add('bubble-hide');
+                    setTimeout(function () {
+                        newBubble.remove();
+                    }, 2000);
+                }, Math.floor(Math.random() * 1000) + 2000);
+            }, 900);
+        </script>
+    </head>
+    <body>
+        <h1 class="title">Personal TTS</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-25">
+                    <label for="voicename">Voice Name</label>
+                </div>
+                <div class="col-75" id="div_voice_name">
+                    <select id="voicename">
+                        <option disabled>en-US:</option>
+                        <option selected value="en-US-SteffanNeural">en-US-SteffanNeural</option>
+                        <option value="en-US-AriaNeural">en-US-AriaNeural</option>
+                        <option value="en-US-AnaNeural">en-US-AnaNeural</option>
+                        <option value="en-US-AvaNeural">en-US-AvaNeural</option>
+                        <option value="en-US-AndrewNeural">en-US-AndrewNeural</option>
+                        <option value="en-US-BrianNeural">en-US-BrianNeural</option>
+                        <option value="en-US-ChristopherNeural">en-US-ChristopherNeural</option>
+                        <option value="en-US-EmmaNeural">en-US-EmmaNeural</option>
+                        <option value="en-US-EricNeural">en-US-EricNeural</option>
+                        <option value="en-US-GuyNeural">en-US-GuyNeural</option>
+                        <option value="en-US-JennyNeural">en-US-JennyNeural</option>
+                        <option value="en-US-MichelleNeural">en-US-MichelleNeural</option>
+                        <option value="en-US-RogerNeural">en-US-RogerNeural</option>
+                        <option disabled>en-GB:</option>
+                        <option value="en-GB-LibbyNeural">en-GB-LibbyNeural</option>
+                        <option value="en-GB-MaisieNeural">en-GB-MaisieNeural</option>
+                        <option value="en-GB-RyanNeural">en-GB-RyanNeural</option>
+                        <option value="en-GB-SoniaNeural">en-GB-SoniaNeural</option>
+                        <option value="en-GB-ThomasNeural">en-GB-ThomasNeural</option>
+                        <option disabled>Other:</option>
+                        <option value="af-ZA-AdriNeural">af-ZA-AdriNeural</option>
+                        <option value="af-ZA-WillemNeural">af-ZA-WillemNeural</option>
+                        <option value="sq-AL-AnilaNeural">sq-AL-AnilaNeural</option>
+                        <option value="sq-AL-IlirNeural">sq-AL-IlirNeural</option>
+                        <option value="am-ET-AmehaNeural">am-ET-AmehaNeural</option>
+                        <option value="am-ET-MekdesNeural">am-ET-MekdesNeural</option>
+                        <option value="ar-DZ-AminaNeural">ar-DZ-AminaNeural</option>
+                        <option value="ar-DZ-IsmaelNeural">ar-DZ-IsmaelNeural</option>
+                        <option value="ar-BH-AliNeural">ar-BH-AliNeural</option>
+                        <option value="ar-BH-LailaNeural">ar-BH-LailaNeural</option>
+                        <option value="ar-EG-SalmaNeural">ar-EG-SalmaNeural</option>
+                        <option value="ar-EG-ShakirNeural">ar-EG-ShakirNeural</option>
+                        <option value="ar-IQ-BasselNeural">ar-IQ-BasselNeural</option>
+                        <option value="ar-IQ-RanaNeural">ar-IQ-RanaNeural</option>
+                        <option value="ar-JO-SanaNeural">ar-JO-SanaNeural</option>
+                        <option value="ar-JO-TaimNeural">ar-JO-TaimNeural</option>
+                        <option value="ar-KW-FahedNeural">ar-KW-FahedNeural</option>
+                        <option value="ar-KW-NouraNeural">ar-KW-NouraNeural</option>
+                        <option value="ar-LB-LaylaNeural">ar-LB-LaylaNeural</option>
+                        <option value="ar-LB-RamiNeural">ar-LB-RamiNeural</option>
+                        <option value="ar-LY-ImanNeural">ar-LY-ImanNeural</option>
+                        <option value="ar-LY-OmarNeural">ar-LY-OmarNeural</option>
+                        <option value="ar-MA-JamalNeural">ar-MA-JamalNeural</option>
+                        <option value="ar-MA-MounaNeural">ar-MA-MounaNeural</option>
+                        <option value="ar-OM-AbdullahNeural">ar-OM-AbdullahNeural</option>
+                        <option value="ar-OM-AyshaNeural">ar-OM-AyshaNeural</option>
+                        <option value="ar-QA-AmalNeural">ar-QA-AmalNeural</option>
+                        <option value="ar-QA-MoazNeural">ar-QA-MoazNeural</option>
+                        <option value="ar-SA-HamedNeural">ar-SA-HamedNeural</option>
+                        <option value="ar-SA-ZariyahNeural">ar-SA-ZariyahNeural</option>
+                        <option value="ar-SY-AmanyNeural">ar-SY-AmanyNeural</option>
+                        <option value="ar-SY-LaithNeural">ar-SY-LaithNeural</option>
+                        <option value="ar-TN-HediNeural">ar-TN-HediNeural</option>
+                        <option value="ar-TN-ReemNeural">ar-TN-ReemNeural</option>
+                        <option value="ar-AE-FatimaNeural">ar-AE-FatimaNeural</option>
+                        <option value="ar-AE-HamdanNeural">ar-AE-HamdanNeural</option>
+                        <option value="ar-YE-MaryamNeural">ar-YE-MaryamNeural</option>
+                        <option value="ar-YE-SalehNeural">ar-YE-SalehNeural</option>
+                        <option value="az-AZ-BabekNeural">az-AZ-BabekNeural</option>
+                        <option value="az-AZ-BanuNeural">az-AZ-BanuNeural</option>
+                        <option value="bn-BD-NabanitaNeural">bn-BD-NabanitaNeural</option>
+                        <option value="bn-BD-PradeepNeural">bn-BD-PradeepNeural</option>
+                        <option value="bn-IN-BashkarNeural">bn-IN-BashkarNeural</option>
+                        <option value="bn-IN-TanishaaNeural">bn-IN-TanishaaNeural</option>
+                        <option value="bs-BA-GoranNeural">bs-BA-GoranNeural</option>
+                        <option value="bs-BA-VesnaNeural">bs-BA-VesnaNeural</option>
+                        <option value="bg-BG-BorislavNeural">bg-BG-BorislavNeural</option>
+                        <option value="bg-BG-KalinaNeural">bg-BG-KalinaNeural</option>
+                        <option value="my-MM-NilarNeural">my-MM-NilarNeural</option>
+                        <option value="my-MM-ThihaNeural">my-MM-ThihaNeural</option>
+                        <option value="ca-ES-EnricNeural">ca-ES-EnricNeural</option>
+                        <option value="ca-ES-JoanaNeural">ca-ES-JoanaNeural</option>
+                        <option value="zh-HK-HiuGaaiNeural">zh-HK-HiuGaaiNeural</option>
+                        <option value="zh-HK-HiuMaanNeural">zh-HK-HiuMaanNeural</option>
+                        <option value="zh-HK-WanLungNeural">zh-HK-WanLungNeural</option>
+                        <option value="zh-CN-XiaoxiaoNeural">zh-CN-XiaoxiaoNeural</option>
+                        <option value="zh-CN-XiaoyiNeural">zh-CN-XiaoyiNeural</option>
+                        <option value="zh-CN-YunjianNeural">zh-CN-YunjianNeural</option>
+                        <option value="zh-CN-YunxiNeural">zh-CN-YunxiNeural</option>
+                        <option value="zh-CN-YunxiaNeural">zh-CN-YunxiaNeural</option>
+                        <option value="zh-CN-YunyangNeural">zh-CN-YunyangNeural</option>
+                        <option value="zh-CN-liaoning-XiaobeiNeural">zh-CN-liaoning-XiaobeiNeural</option>
+                        <option value="zh-TW-HsiaoChenNeural">zh-TW-HsiaoChenNeural</option>
+                        <option value="zh-TW-YunJheNeural">zh-TW-YunJheNeural</option>
+                        <option value="zh-TW-HsiaoYuNeural">zh-TW-HsiaoYuNeural</option>
+                        <option value="zh-CN-shaanxi-XiaoniNeural">zh-CN-shaanxi-XiaoniNeural</option>
+                        <option value="hr-HR-GabrijelaNeural">hr-HR-GabrijelaNeural</option>
+                        <option value="hr-HR-SreckoNeural">hr-HR-SreckoNeural</option>
+                        <option value="cs-CZ-AntoninNeural">cs-CZ-AntoninNeural</option>
+                        <option value="cs-CZ-VlastaNeural">cs-CZ-VlastaNeural</option>
+                        <option value="da-DK-ChristelNeural">da-DK-ChristelNeural</option>
+                        <option value="da-DK-JeppeNeural">da-DK-JeppeNeural</option>
+                        <option value="nl-BE-ArnaudNeural">nl-BE-ArnaudNeural</option>
+                        <option value="nl-BE-DenaNeural">nl-BE-DenaNeural</option>
+                        <option value="nl-NL-ColetteNeural">nl-NL-ColetteNeural</option>
+                        <option value="nl-NL-FennaNeural">nl-NL-FennaNeural</option>
+                        <option value="nl-NL-MaartenNeural">nl-NL-MaartenNeural</option>
+                        <option value="en-AU-NatashaNeural">en-AU-NatashaNeural</option>
+                        <option value="en-AU-WilliamNeural">en-AU-WilliamNeural</option>
+                        <option value="en-CA-ClaraNeural">en-CA-ClaraNeural</option>
+                        <option value="en-CA-LiamNeural">en-CA-LiamNeural</option>
+                        <option value="en-HK-SamNeural">en-HK-SamNeural</option>
+                        <option value="en-HK-YanNeural">en-HK-YanNeural</option>
+                        <option value="en-IN-NeerjaExpressiveNeural">en-IN-NeerjaExpressiveNeural</option>
+                        <option value="en-IN-NeerjaNeural">en-IN-NeerjaNeural</option>
+                        <option value="en-IN-PrabhatNeural">en-IN-PrabhatNeural</option>
+                        <option value="en-IE-ConnorNeural">en-IE-ConnorNeural</option>
+                        <option value="en-IE-EmilyNeural">en-IE-EmilyNeural</option>
+                        <option value="en-KE-AsiliaNeural">en-KE-AsiliaNeural</option>
+                        <option value="en-KE-ChilembaNeural">en-KE-ChilembaNeural</option>
+                        <option value="en-NZ-MitchellNeural">en-NZ-MitchellNeural</option>
+                        <option value="en-NZ-MollyNeural">en-NZ-MollyNeural</option>
+                        <option value="en-NG-AbeoNeural">en-NG-AbeoNeural</option>
+                        <option value="en-NG-EzinneNeural">en-NG-EzinneNeural</option>
+                        <option value="en-PH-JamesNeural">en-PH-JamesNeural</option>
+                        <option value="en-PH-RosaNeural">en-PH-RosaNeural</option>
+                        <option value="en-SG-LunaNeural">en-SG-LunaNeural</option>
+                        <option value="en-SG-WayneNeural">en-SG-WayneNeural</option>
+                        <option value="en-ZA-LeahNeural">en-ZA-LeahNeural</option>
+                        <option value="en-ZA-LukeNeural">en-ZA-LukeNeural</option>
+                        <option value="en-TZ-ElimuNeural">en-TZ-ElimuNeural</option>
+                        <option value="en-TZ-ImaniNeural">en-TZ-ImaniNeural</option>
+                        <option value="et-EE-AnuNeural">et-EE-AnuNeural</option>
+                        <option value="et-EE-KertNeural">et-EE-KertNeural</option>
+                        <option value="fil-PH-AngeloNeural">fil-PH-AngeloNeural</option>
+                        <option value="fil-PH-BlessicaNeural">fil-PH-BlessicaNeural</option>
+                        <option value="fi-FI-HarriNeural">fi-FI-HarriNeural</option>
+                        <option value="fi-FI-NooraNeural">fi-FI-NooraNeural</option>
+                        <option value="fr-BE-CharlineNeural">fr-BE-CharlineNeural</option>
+                        <option value="fr-BE-GerardNeural">fr-BE-GerardNeural</option>
+                        <option value="fr-CA-AntoineNeural">fr-CA-AntoineNeural</option>
+                        <option value="fr-CA-JeanNeural">fr-CA-JeanNeural</option>
+                        <option value="fr-CA-SylvieNeural">fr-CA-SylvieNeural</option>
+                        <option value="fr-FR-DeniseNeural">fr-FR-DeniseNeural</option>
+                        <option value="fr-FR-EloiseNeural">fr-FR-EloiseNeural</option>
+                        <option value="fr-FR-HenriNeural">fr-FR-HenriNeural</option>
+                        <option value="fr-CH-ArianeNeural">fr-CH-ArianeNeural</option>
+                        <option value="fr-CH-FabriceNeural">fr-CH-FabriceNeural</option>
+                        <option value="gl-ES-RoiNeural">gl-ES-RoiNeural</option>
+                        <option value="gl-ES-SabelaNeural">gl-ES-SabelaNeural</option>
+                        <option value="ka-GE-EkaNeural">ka-GE-EkaNeural</option>
+                        <option value="ka-GE-GiorgiNeural">ka-GE-GiorgiNeural</option>
+                        <option value="de-AT-IngridNeural">de-AT-IngridNeural</option>
+                        <option value="de-AT-JonasNeural">de-AT-JonasNeural</option>
+                        <option value="de-DE-AmalaNeural">de-DE-AmalaNeural</option>
+                        <option value="de-DE-ConradNeural">de-DE-ConradNeural</option>
+                        <option value="de-DE-KatjaNeural">de-DE-KatjaNeural</option>
+                        <option value="de-DE-KillianNeural">de-DE-KillianNeural</option>
+                        <option value="de-CH-JanNeural">de-CH-JanNeural</option>
+                        <option value="de-CH-LeniNeural">de-CH-LeniNeural</option>
+                        <option value="el-GR-AthinaNeural">el-GR-AthinaNeural</option>
+                        <option value="el-GR-NestorasNeural">el-GR-NestorasNeural</option>
+                        <option value="gu-IN-DhwaniNeural">gu-IN-DhwaniNeural</option>
+                        <option value="gu-IN-NiranjanNeural">gu-IN-NiranjanNeural</option>
+                        <option value="he-IL-AvriNeural">he-IL-AvriNeural</option>
+                        <option value="he-IL-HilaNeural">he-IL-HilaNeural</option>
+                        <option value="hi-IN-MadhurNeural">hi-IN-MadhurNeural</option>
+                        <option value="hi-IN-SwaraNeural">hi-IN-SwaraNeural</option>
+                        <option value="hu-HU-NoemiNeural">hu-HU-NoemiNeural</option>
+                        <option value="hu-HU-TamasNeural">hu-HU-TamasNeural</option>
+                        <option value="is-IS-GudrunNeural">is-IS-GudrunNeural</option>
+                        <option value="is-IS-GunnarNeural">is-IS-GunnarNeural</option>
+                        <option value="id-ID-ArdiNeural">id-ID-ArdiNeural</option>
+                        <option value="id-ID-GadisNeural">id-ID-GadisNeural</option>
+                        <option value="ga-IE-ColmNeural">ga-IE-ColmNeural</option>
+                        <option value="ga-IE-OrlaNeural">ga-IE-OrlaNeural</option>
+                        <option value="it-IT-DiegoNeural">it-IT-DiegoNeural</option>
+                        <option value="it-IT-ElsaNeural">it-IT-ElsaNeural</option>
+                        <option value="it-IT-IsabellaNeural">it-IT-IsabellaNeural</option>
+                        <option value="ja-JP-KeitaNeural">ja-JP-KeitaNeural</option>
+                        <option value="ja-JP-NanamiNeural">ja-JP-NanamiNeural</option>
+                        <option value="jv-ID-DimasNeural">jv-ID-DimasNeural</option>
+                        <option value="jv-ID-SitiNeural">jv-ID-SitiNeural</option>
+                        <option value="kn-IN-GaganNeural">kn-IN-GaganNeural</option>
+                        <option value="kn-IN-SapnaNeural">kn-IN-SapnaNeural</option>
+                        <option value="kk-KZ-AigulNeural">kk-KZ-AigulNeural</option>
+                        <option value="kk-KZ-DauletNeural">kk-KZ-DauletNeural</option>
+                        <option value="km-KH-PisethNeural">km-KH-PisethNeural</option>
+                        <option value="km-KH-SreymomNeural">km-KH-SreymomNeural</option>
+                        <option value="ko-KR-InJoonNeural">ko-KR-InJoonNeural</option>
+                        <option value="ko-KR-SunHiNeural">ko-KR-SunHiNeural</option>
+                        <option value="lo-LA-ChanthavongNeural">lo-LA-ChanthavongNeural</option>
+                        <option value="lo-LA-KeomanyNeural">lo-LA-KeomanyNeural</option>
+                        <option value="lv-LV-EveritaNeural">lv-LV-EveritaNeural</option>
+                        <option value="lv-LV-NilsNeural">lv-LV-NilsNeural</option>
+                        <option value="lt-LT-LeonasNeural">lt-LT-LeonasNeural</option>
+                        <option value="lt-LT-OnaNeural">lt-LT-OnaNeural</option>
+                        <option value="mk-MK-AleksandarNeural">mk-MK-AleksandarNeural</option>
+                        <option value="mk-MK-MarijaNeural">mk-MK-MarijaNeural</option>
+                        <option value="ms-MY-OsmanNeural">ms-MY-OsmanNeural</option>
+                        <option value="ms-MY-YasminNeural">ms-MY-YasminNeural</option>
+                        <option value="ml-IN-MidhunNeural">ml-IN-MidhunNeural</option>
+                        <option value="ml-IN-SobhanaNeural">ml-IN-SobhanaNeural</option>
+                        <option value="mt-MT-GraceNeural">mt-MT-GraceNeural</option>
+                        <option value="mt-MT-JosephNeural">mt-MT-JosephNeural</option>
+                        <option value="mr-IN-AarohiNeural">mr-IN-AarohiNeural</option>
+                        <option value="mr-IN-ManoharNeural">mr-IN-ManoharNeural</option>
+                        <option value="mn-MN-BataaNeural">mn-MN-BataaNeural</option>
+                        <option value="mn-MN-YesuiNeural">mn-MN-YesuiNeural</option>
+                        <option value="ne-NP-HemkalaNeural">ne-NP-HemkalaNeural</option>
+                        <option value="ne-NP-SagarNeural">ne-NP-SagarNeural</option>
+                        <option value="nb-NO-FinnNeural">nb-NO-FinnNeural</option>
+                        <option value="nb-NO-PernilleNeural">nb-NO-PernilleNeural</option>
+                        <option value="ps-AF-GulNawazNeural">ps-AF-GulNawazNeural</option>
+                        <option value="ps-AF-LatifaNeural">ps-AF-LatifaNeural</option>
+                        <option value="fa-IR-DilaraNeural">fa-IR-DilaraNeural</option>
+                        <option value="fa-IR-FaridNeural">fa-IR-FaridNeural</option>
+                        <option value="pl-PL-MarekNeural">pl-PL-MarekNeural</option>
+                        <option value="pl-PL-ZofiaNeural">pl-PL-ZofiaNeural</option>
+                        <option value="pt-BR-AntonioNeural">pt-BR-AntonioNeural</option>
+                        <option value="pt-BR-FranciscaNeural">pt-BR-FranciscaNeural</option>
+                        <option value="pt-PT-DuarteNeural">pt-PT-DuarteNeural</option>
+                        <option value="pt-PT-RaquelNeural">pt-PT-RaquelNeural</option>
+                        <option value="ro-RO-AlinaNeural">ro-RO-AlinaNeural</option>
+                        <option value="ro-RO-EmilNeural">ro-RO-EmilNeural</option>
+                        <option value="ru-RU-DmitryNeural">ru-RU-DmitryNeural</option>
+                        <option value="ru-RU-SvetlanaNeural">ru-RU-SvetlanaNeural</option>
+                        <option value="sr-RS-NicholasNeural">sr-RS-NicholasNeural</option>
+                        <option value="sr-RS-SophieNeural">sr-RS-SophieNeural</option>
+                        <option value="si-LK-SameeraNeural">si-LK-SameeraNeural</option>
+                        <option value="si-LK-ThiliniNeural">si-LK-ThiliniNeural</option>
+                        <option value="sk-SK-LukasNeural">sk-SK-LukasNeural</option>
+                        <option value="sk-SK-ViktoriaNeural">sk-SK-ViktoriaNeural</option>
+                        <option value="sl-SI-PetraNeural">sl-SI-PetraNeural</option>
+                        <option value="sl-SI-RokNeural">sl-SI-RokNeural</option>
+                        <option value="so-SO-MuuseNeural">so-SO-MuuseNeural</option>
+                        <option value="so-SO-UbaxNeural">so-SO-UbaxNeural</option>
+                        <option value="es-AR-ElenaNeural">es-AR-ElenaNeural</option>
+                        <option value="es-AR-TomasNeural">es-AR-TomasNeural</option>
+                        <option value="es-BO-MarceloNeural">es-BO-MarceloNeural</option>
+                        <option value="es-BO-SofiaNeural">es-BO-SofiaNeural</option>
+                        <option value="es-CL-CatalinaNeural">es-CL-CatalinaNeural</option>
+                        <option value="es-CL-LorenzoNeural">es-CL-LorenzoNeural</option>
+                        <option value="es-CO-GonzaloNeural">es-CO-GonzaloNeural</option>
+                        <option value="es-CO-SalomeNeural">es-CO-SalomeNeural</option>
+                        <option value="es-CR-JuanNeural">es-CR-JuanNeural</option>
+                        <option value="es-CR-MariaNeural">es-CR-MariaNeural</option>
+                        <option value="es-CU-BelkysNeural">es-CU-BelkysNeural</option>
+                        <option value="es-CU-ManuelNeural">es-CU-ManuelNeural</option>
+                        <option value="es-DO-EmilioNeural">es-DO-EmilioNeural</option>
+                        <option value="es-DO-RamonaNeural">es-DO-RamonaNeural</option>
+                        <option value="es-EC-AndreaNeural">es-EC-AndreaNeural</option>
+                        <option value="es-EC-LuisNeural">es-EC-LuisNeural</option>
+                        <option value="es-SV-LorenaNeural">es-SV-LorenaNeural</option>
+                        <option value="es-SV-RodrigoNeural">es-SV-RodrigoNeural</option>
+                        <option value="es-GQ-JavierNeural">es-GQ-JavierNeural</option>
+                        <option value="es-GQ-TeresaNeural">es-GQ-TeresaNeural</option>
+                        <option value="es-GT-AndresNeural">es-GT-AndresNeural</option>
+                        <option value="es-GT-MartaNeural">es-GT-MartaNeural</option>
+                        <option value="es-HN-CarlosNeural">es-HN-CarlosNeural</option>
+                        <option value="es-HN-KarlaNeural">es-HN-KarlaNeural</option>
+                        <option value="es-MX-DaliaNeural">es-MX-DaliaNeural</option>
+                        <option value="es-MX-JorgeNeural">es-MX-JorgeNeural</option>
+                        <option value="es-NI-FedericoNeural">es-NI-FedericoNeural</option>
+                        <option value="es-NI-YolandaNeural">es-NI-YolandaNeural</option>
+                        <option value="es-PA-MargaritaNeural">es-PA-MargaritaNeural</option>
+                        <option value="es-PA-RobertoNeural">es-PA-RobertoNeural</option>
+                        <option value="es-PY-MarioNeural">es-PY-MarioNeural</option>
+                        <option value="es-PY-TaniaNeural">es-PY-TaniaNeural</option>
+                        <option value="es-PE-AlexNeural">es-PE-AlexNeural</option>
+                        <option value="es-PE-CamilaNeural">es-PE-CamilaNeural</option>
+                        <option value="es-PR-KarinaNeural">es-PR-KarinaNeural</option>
+                        <option value="es-PR-VictorNeural">es-PR-VictorNeural</option>
+                        <option value="es-ES-AlvaroNeural">es-ES-AlvaroNeural</option>
+                        <option value="es-ES-ElviraNeural">es-ES-ElviraNeural</option>
+                        <option value="es-US-AlonsoNeural">es-US-AlonsoNeural</option>
+                        <option value="es-US-PalomaNeural">es-US-PalomaNeural</option>
+                        <option value="es-UY-MateoNeural">es-UY-MateoNeural</option>
+                        <option value="es-UY-ValentinaNeural">es-UY-ValentinaNeural</option>
+                        <option value="es-VE-PaolaNeural">es-VE-PaolaNeural</option>
+                        <option value="es-VE-SebastianNeural">es-VE-SebastianNeural</option>
+                        <option value="su-ID-JajangNeural">su-ID-JajangNeural</option>
+                        <option value="su-ID-TutiNeural">su-ID-TutiNeural</option>
+                        <option value="sw-KE-RafikiNeural">sw-KE-RafikiNeural</option>
+                        <option value="sw-KE-ZuriNeural">sw-KE-ZuriNeural</option>
+                        <option value="sw-TZ-DaudiNeural">sw-TZ-DaudiNeural</option>
+                        <option value="sw-TZ-RehemaNeural">sw-TZ-RehemaNeural</option>
+                        <option value="sv-SE-MattiasNeural">sv-SE-MattiasNeural</option>
+                        <option value="sv-SE-SofieNeural">sv-SE-SofieNeural</option>
+                        <option value="ta-IN-PallaviNeural">ta-IN-PallaviNeural</option>
+                        <option value="ta-IN-ValluvarNeural">ta-IN-ValluvarNeural</option>
+                        <option value="ta-MY-KaniNeural">ta-MY-KaniNeural</option>
+                        <option value="ta-MY-SuryaNeural">ta-MY-SuryaNeural</option>
+                        <option value="ta-SG-AnbuNeural">ta-SG-AnbuNeural</option>
+                        <option value="ta-SG-VenbaNeural">ta-SG-VenbaNeural</option>
+                        <option value="ta-LK-KumarNeural">ta-LK-KumarNeural</option>
+                        <option value="ta-LK-SaranyaNeural">ta-LK-SaranyaNeural</option>
+                        <option value="te-IN-MohanNeural">te-IN-MohanNeural</option>
+                        <option value="te-IN-ShrutiNeural">te-IN-ShrutiNeural</option>
+                        <option value="th-TH-NiwatNeural">th-TH-NiwatNeural</option>
+                        <option value="th-TH-PremwadeeNeural">th-TH-PremwadeeNeural</option>
+                        <option value="tr-TR-AhmetNeural">tr-TR-AhmetNeural</option>
+                        <option value="tr-TR-EmelNeural">tr-TR-EmelNeural</option>
+                        <option value="uk-UA-OstapNeural">uk-UA-OstapNeural</option>
+                        <option value="uk-UA-PolinaNeural">uk-UA-PolinaNeural</option>
+                        <option value="ur-IN-GulNeural">ur-IN-GulNeural</option>
+                        <option value="ur-IN-SalmanNeural">ur-IN-SalmanNeural</option>
+                        <option value="ur-PK-AsadNeural">ur-PK-AsadNeural</option>
+                        <option value="ur-PK-UzmaNeural">ur-PK-UzmaNeural</option>
+                        <option value="uz-UZ-MadinaNeural">uz-UZ-MadinaNeural</option>
+                        <option value="uz-UZ-SardorNeural">uz-UZ-SardorNeural</option>
+                        <option value="vi-VN-HoaiMyNeural">vi-VN-HoaiMyNeural</option>
+                        <option value="vi-VN-NamMinhNeural">vi-VN-NamMinhNeural</option>
+                        <option value="cy-GB-AledNeural">cy-GB-AledNeural</option>
+                        <option value="cy-GB-NiaNeural">cy-GB-NiaNeural</option>
+                        <option value="zu-ZA-ThandoNeural">zu-ZA-ThandoNeural</option>
+                        <option value="zu-ZA-ThembaNeural">zu-ZA-ThembaNeural</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="fname">Text</label>
+                </div>
+                <div class="col-75" id="div_text">
+                    <textarea style="width:100%; height:200px" id="text" placeholder="Enter your desired text here and hit generate button..."></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="fname">Audio Result</label>
+                </div>
+                <div class="col-75" id="div_audio_result">
+                    <audio controls id="audio" style="display: none;"></audio>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="fname">Progress</label>
+                </div>
+                <div id="progressBar" class="col-75">
+                    <div id="progress" style="width: 0%; background-color: green;"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="fname"></label>
+                </div>
+                <div class="col-75">
+                    <input type="button" value="Generate Voice" id="generatevoice">
+                    <input type="button" value="Download Voice" id="downloadvoice" style="display: none; background-color: rgb(173, 141, 118)">
+                    <input type="button" value="Cancel" id="cancelvoice" onclick="location.reload();" style="display: none; background-color: rgb(173, 118, 118)">
+                    <br>
+                    <label for="autoplay">Auto Play?</label>
+                    <input type="checkbox" id="autoplay">
+                </div>
+            </div>
+            <div class="row">
+                <span id="voiceuri"></span>
+            </div>
+        </div>
+        <style>
+            #progressBar {
+                background-color: #f0f0f0;
+                border-radius: 5px;
+                margin-top: 10px;
+            }
+
+            #progress {
+                height: 20px;
+                background-color: green;
+                border-radius: 5px;
+                transition: width 0.3s ease;
+            }
+
+        </style>
+        <script>
+            const voicename = document.getElementById('voicename');
+            const text = document.getElementById('text');
+            text.focus();
+            let current_url, current_filename;
+            document.getElementById('downloadvoice').addEventListener('click', function () {
+                if (current_url) {
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = current_url;
+                    downloadLink.download = current_filename;
+                    downloadLink.textContent = "Download MP3";
+                    downloadLink.click();
+                    downloadLink.remove();
+                }
+            });
+            document.getElementById('generatevoice').addEventListener('click', function () {
+                if (text.value.trim() == '') return;
+                document.getElementById('cancelvoice').style.display = 'inline';
+                document.getElementById("progress").style.width = '0%';
+                let progressTimer;
+                let slowProgressInterval;
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "/stream_tts", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.responseType = "blob";
+                xhr.addEventListener("progress", function (event) {
+                    if (event.lengthComputable) {
+                        const percentComplete = (event.loaded / event.total) * 100;
+                        document.getElementById("progress").style.width = percentComplete + '%';
+                    }
+                });
+                xhr.onreadystatechange = function () {
+                    document.getElementById('cancelvoice').style.display = 'none';
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const blob = new Blob([xhr.response], { type: "audio/mpeg" });
+                        const url = window.URL.createObjectURL(blob);
+                        const audio = document.getElementById("audio");
+                        audio.src = url;
+                        audio.style.display = "block";
+                        downloadvoice.style.display = "inline";
+                        const filename = xhr.getResponseHeader('Content-Disposition').split('filename=')[1].replaceAll('"', '').split('\\')[2];
+                        current_url = url;
+                        current_filename = filename;
+                        if (document.getElementById('autoplay').checked) audio.play();
+                        document.getElementById("progress").style.width = '100%';
+                        clearInterval(slowProgressInterval);
+                        clearTimeout(progressTimer);
+                    }
+                };
+                // Start slow progress interval if progress is not updated after 3 seconds
+                progressTimer = setTimeout(function () {
+                    slowProgressInterval = setInterval(function () {
+                        let currentWidth = parseFloat(document.getElementById("progress").style.width);
+                        if (currentWidth < 100) {
+                            currentWidth += 0.2; // Increment progress by 1% every interval
+                            document.getElementById("progress").style.width = currentWidth + '%';
+                        }
+                    }, 100); // Update progress every 100 milliseconds
+                }, 500); // Wait for 3 seconds before starting slow progress interval
+                xhr.send(JSON.stringify({ text: text.value.trim(), voice: voicename.value }));
+            });
+        </script>
+    </body>
+</html>

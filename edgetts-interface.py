@@ -34,18 +34,25 @@ async def stream_tts(request):
         volume="+0%",
         pitch="+0Hz",
     )
+
+    # Calculate total length during the first stream iteration
     total_length = 0
+    audio_chunks = []  # Store audio chunks here
     async for chunk in tts.stream():
         if chunk["type"] == "audio":
             total_length += len(chunk["data"])
+            audio_chunks.append(chunk["data"])
+
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     output_file = f"{OUTPUT_FOLDER}{current_time}.mp3"
     headers = {'Content-Type': 'audio/mpeg', 'Content-Disposition': f'attachment; filename="{output_file}"', 'Content-Length': str(total_length)}
     response = web.StreamResponse(headers=headers)
     await response.prepare(request)
-    async for chunk in tts.stream():
-        if chunk["type"] == "audio":
-            await response.write(chunk["data"])
+
+    # Stream the stored audio chunks to the client
+    for chunk in audio_chunks:
+        await response.write(chunk)
+
     return response
 
 app = web.Application()
